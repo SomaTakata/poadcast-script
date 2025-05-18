@@ -1,103 +1,243 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import ThemeSelector from "@/components/StepTheme";
+import CharacterSelector from "@/components/StepCharacter";
+import StructureSelector from "@/components/StepStructure";
+import ScriptGenerator from "@/components/StepScript";
+import { Button } from "@/components/ui/button";
+import {
+  ShieldCheck,
+  ArrowRight,
+  Mic,
+  Podcast,
+  Sparkles,
+  MenuSquare,
+  FileText,
+} from "lucide-react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [step, setStep] = useState<
+    "theme" | "character" | "structure" | "script" | "complete"
+  >("theme");
+  const [theme, setTheme] = useState("");
+  const [character, setCharacter] = useState<{
+    name: string;
+    description: string;
+    tone: string;
+  } | null>(null);
+  const [structure, setStructure] = useState<{
+    intro: string;
+    sections: string[];
+    outro: string;
+  } | null>(null);
+  const [script, setScript] = useState<string>("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // ステップの進行状況を表示するヘッダー
+  const StepHeader = () => (
+    <div className="w-full max-w-4xl mx-auto mb-4 px-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <div
+            className={`flex items-center justify-center w-8 h-8 rounded-full ${
+              [
+                "theme",
+                "character",
+                "structure",
+                "script",
+                "complete",
+              ].includes(step)
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Podcast size={18} />
+          </div>
+          <div
+            className={`h-1 w-12 mx-1 ${
+              ["character", "structure", "script", "complete"].includes(step)
+                ? "bg-primary"
+                : "bg-gray-200"
+            }`}
+          ></div>
+          <div
+            className={`flex items-center justify-center w-8 h-8 rounded-full ${
+              ["character", "structure", "script", "complete"].includes(step)
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
           >
-            Read our docs
-          </a>
+            <Mic size={18} />
+          </div>
+          <div
+            className={`h-1 w-12 mx-1 ${
+              ["structure", "script", "complete"].includes(step)
+                ? "bg-primary"
+                : "bg-gray-200"
+            }`}
+          ></div>
+          <div
+            className={`flex items-center justify-center w-8 h-8 rounded-full ${
+              ["structure", "script", "complete"].includes(step)
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            <MenuSquare size={18} />
+          </div>
+          <div
+            className={`h-1 w-12 mx-1 ${
+              ["script", "complete"].includes(step)
+                ? "bg-primary"
+                : "bg-gray-200"
+            }`}
+          ></div>
+          <div
+            className={`flex items-center justify-center w-8 h-8 rounded-full ${
+              ["script", "complete"].includes(step)
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            <FileText size={18} />
+          </div>
+          <div
+            className={`h-1 w-12 mx-1 ${
+              step === "complete" ? "bg-primary" : "bg-gray-200"
+            }`}
+          ></div>
+          <div
+            className={`flex items-center justify-center w-8 h-8 rounded-full ${
+              step === "complete"
+                ? "bg-primary text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            <Sparkles size={18} />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="text-sm font-medium text-gray-600">
+          {step === "theme" && "ステップ 1/5: テーマを選択"}
+          {step === "character" && "ステップ 2/5: パーソナリティを選択"}
+          {step === "structure" && "ステップ 3/5: 構成を決定"}
+          {step === "script" && "ステップ 4/5: スクリプト生成"}
+          {step === "complete" && "ステップ 5/5: 完了"}
+        </div>
+      </div>
     </div>
+  );
+
+  // 完了画面
+  const CompletionScreen = () => (
+    <div className="flex flex-col items-center w-full h-full">
+      <div className="w-full max-w-md mt-10 bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="p-6">
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+              <ShieldCheck size={32} />
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-center mb-4">作成完了！</h2>
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <h3 className="font-medium text-gray-800 mb-2">
+              ポッドキャスト情報
+            </h3>
+            <p className="text-sm text-gray-600 mb-1">
+              <span className="font-medium">テーマ:</span> {theme}
+            </p>
+            {character && (
+              <>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">パーソナリティ:</span>{" "}
+                  {character.name}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">説明:</span>{" "}
+                  {character.description}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">トーン:</span> {character.tone}
+                </p>
+              </>
+            )}
+            {structure && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">構成:</span>{" "}
+                  {structure.sections.length}セクション
+                </p>
+              </div>
+            )}
+            {script && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-600 mb-1">
+                  <span className="font-medium">スクリプト:</span> 生成済み
+                </p>
+              </div>
+            )}
+          </div>
+          <p className="text-center text-gray-600 mb-6">
+            ポッドキャストの設定が完了しました。これで録音を始められます。
+          </p>
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={() => setStep("theme")}
+              className="flex items-center"
+            >
+              最初からやり直す
+            </Button>
+            <Button className="flex items-center">
+              録音を始める
+              <ArrowRight className="ml-2" size={16} />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <main className="flex h-screen flex-col items-center justify-between py-10 bg-gradient-to-b from-slate-50 to-white">
+      <StepHeader />
+
+      {step === "theme" && (
+        <ThemeSelector
+          onSelect={(selectedTheme) => setTheme(selectedTheme)}
+          onNext={() => setStep("character")}
+        />
+      )}
+
+      {step === "character" && (
+        <CharacterSelector
+          theme={theme}
+          onSelect={(selectedCharacter) => setCharacter(selectedCharacter)}
+          onNext={() => setStep("structure")}
+          onBack={() => setStep("theme")}
+        />
+      )}
+
+      {step === "structure" && (
+        <StructureSelector
+          theme={theme}
+          character={character}
+          onSelect={(selectedStructure) => setStructure(selectedStructure)}
+          onNext={() => setStep("script")}
+          onBack={() => setStep("character")}
+        />
+      )}
+
+      {step === "script" && (
+        <ScriptGenerator
+          theme={theme}
+          character={character}
+          structure={structure}
+          onGenerate={(generatedScript) => setScript(generatedScript)}
+          onNext={() => setStep("complete")}
+          onBack={() => setStep("structure")}
+        />
+      )}
+
+      {step === "complete" && <CompletionScreen />}
+    </main>
   );
 }
